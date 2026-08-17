@@ -46,6 +46,13 @@ BarWidget {
   // here as well would put two rows side by side. The icon stays: it is the way
   // back into the settings that turns this on again.
   readonly property bool tagsEnabled: panelLoader.item ? panelLoader.item.tagsEnabled === true : false
+
+  // What actually gets drawn: with no tags on the bar the icon is the only way
+  // back into the settings, so it outranks the setting that hides it. One
+  // property because the column count, the popup anchor, and the button itself
+  // all have to agree -- disagreeing is how a hidden icon ends up wrapped onto
+  // a second row.
+  readonly property bool settingsIconShown: root.showSettingsIcon || !root.tagsEnabled
   readonly property string barPosition: bar && bar.position ? String(bar.position) : "top"
   readonly property string settingsGlyph: config.settingsGlyph
   readonly property bool dimUnfocusedMonitor: config.dimUnfocusedMonitor !== false
@@ -148,7 +155,7 @@ BarWidget {
     if ("settings" in target) target.settings = root.settings
     // Under the button that opens it when there is one, so the popup lines up
     // with what was clicked rather than the middle of the tag row.
-    if ("anchorItem" in target) target.anchorItem = root.showSettingsIcon ? settingsButton : grid
+    if ("anchorItem" in target) target.anchorItem = root.settingsIconShown ? settingsButton : grid
     if ("hostWidget" in target) target.hostWidget = root
   }
 
@@ -172,7 +179,7 @@ BarWidget {
     anchors.rightMargin: root.trailingGap
     // The icon is a sibling of the tags, so it takes a column of its own on a
     // horizontal bar and a row of its own on a vertical one.
-    columns: root.vertical ? 1 : (root.tagsEnabled ? root.tags : 0) + (root.showSettingsIcon ? 1 : 0)
+    columns: root.vertical ? 1 : (root.tagsEnabled ? root.tags : 0) + (root.settingsIconShown ? 1 : 0)
     columnSpacing: root.vertical ? 0 : Style.space(1)
     rowSpacing: root.vertical ? Style.space(2) : 0
 
@@ -227,8 +234,7 @@ BarWidget {
 
     WidgetButton {
       id: settingsButton
-      // Always available, so the plugin can be switched back on.
-      visible: true
+      visible: root.settingsIconShown
       bar: root.bar
       text: root.settingsGlyph
       tooltipText: "Workspace tag settings"
