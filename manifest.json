@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "chagel.workspace-tags",
+  "name": "Workspace Tags",
+  "version": "0.1.0",
+  "author": "MGC <chagel@gmail.com>",
+  "license": "MIT",
+  "description": "A workspace indicator that belongs to the monitor it is drawn on: each bar shows its own screen's tags and its own selection, instead of every bar mirroring whichever workspace is globally focused. Optionally generates a Hyprland config giving each monitor a private set of dwm-style tags, with per-tag layouts.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Workspace Tags",
+    "description": "Per-monitor workspace tags, dwm style",
+    "category": "Compositor",
+    "allowMultiple": false,
+    "defaults": {
+      "tags": 9,
+      "monitors": [],
+      "activeGlyph": "󱓻",
+      "dimUnfocusedMonitor": true,
+      "occupiedOpacity": 0.85,
+      "emptyOpacity": 0.3,
+      "viewMods": "CONTROL",
+      "moveMods": "SUPER + SHIFT",
+      "moveSilentMods": "SUPER + SHIFT + ALT",
+      "focusMonitorLeft": "SUPER + bracketleft",
+      "focusMonitorRight": "SUPER + bracketright",
+      "moveMonitorLeft": "SUPER + SHIFT + comma",
+      "moveMonitorRight": "SUPER + SHIFT + period",
+      "nextTag": "SUPER + mouse_down",
+      "previousTag": "SUPER + mouse_up",
+      "tagLabels": "numbers",
+      "showSettingsIcon": true,
+      "settingsGlyph": "󱂬",
+      "openSettings": "SUPER + ALT + W",
+      "cycleLayout": "SUPER + ALT + L"
+    },
+    "settingsForm": "SettingsView.qml",
+    "defaultSection": "left"
+  }
+}
