@@ -171,7 +171,22 @@ with `hyprctl dispatch 'hl.dsp.workspace.change_id({ workspace = 16, id = 6 })'`
 - **There is deliberately no `swap_monitors` binding.** It would put a pinned id
   on the wrong screen and fight the workspace rules. Move the windows instead.
 
-## Tests
+## Development
+
+Link the plugin folder at your checkout and the QML reloads as you save it:
+
+```bash
+ln -s "$PWD" ~/.config/omarchy/plugins/chagel.workspace-tags
+```
+
+`Generator.js` does not follow — the QML engine loads a `.pragma library` once
+and keeps it, so the shell has to restart before an edit takes effect. Two
+scripts cover that:
+
+```bash
+scripts/apply    # restart the shell, then check the generated config matches
+scripts/watch    # do it automatically as files are saved
+```
 
 ```bash
 node test/generator.test.js

@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+#
+# Push the working tree onto the running system.
+#
+#   scripts/apply
+#
+# The plugin folder is expected to be a link into this checkout, which is what
+# makes the QML side live. Two things do not follow from that link on their own,
+# and this handles both.
+
+set -euo pipefail
+
+root="$(cd "$(dirname "$0")/.." && pwd)"
+config="$HOME/.config/hypr/workspace-tags.lua"
+
+# 1. Generator.js is a `.pragma library`: the QML engine loads it once and keeps
+# it. Editing it changes nothing until the shell comes back -- and worse, the
+# stale copy keeps regenerating the Hyprland config from the old rules, quietly
+# undoing whatever this script writes below.
+echo "restarting shell"
+omarchy restart shell
+
+# The restart returns before the shell is up. Wait for it, because the widget
+# regenerates the Hyprland config as it loads and comparing against a file it
+# has not rewritten yet reports a difference that is about to fix itself.
+for _ in $(seq 1 40); do
+  omarchy-shell -q shell ping && break
+  sleep 0.25
+done
+
+# 2. That startup regeneration is what actually carries a generator change onto
+# the system. Render the same thing here and compare: a difference means the
+# shell did not rewrite the file -- per-monitor tags off, an error on the QML
+# side -- and the config would otherwise sit on stale rules unnoticed.
+if [ ! -f "$config" ]; then
+  echo "per-monitor tags are off -- nothing generated"
+  exit 0
+fi
+
+new="$(mktemp)"
+trap 'rm -f "$new"' EXIT
+node "$root/scripts/render.js" > "$new"
+
+if cmp -s "$new" "$config"; then
+  echo "config unchanged"
+  exit 0
+fi
+
+diff -u "$config" "$new" || true
+cp "$config" "$config.bak.$(date +%s)"
+cp "$new" "$config"
+
+# Fail before reloading rather than hand Hyprland something broken.
+command -v luac >/dev/null && luac -p "$config"
+
+hyprctl reload >/dev/null
+echo "config updated, hyprland reloaded"

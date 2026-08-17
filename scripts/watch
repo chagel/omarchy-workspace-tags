@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+#
+# Reflect edits in this checkout on the running system as they are saved.
+#
+#   scripts/watch
+#
+# QML files need nothing -- the shell reloads them from the linked plugin folder
+# on save. Everything else goes through scripts/apply.
+
+set -euo pipefail
+
+root="$(cd "$(dirname "$0")/.." && pwd)"
+
+command -v inotifywait >/dev/null || {
+  echo "needs inotify-tools" >&2
+  exit 1
+}
+
+echo "watching $root -- ctrl-c to stop"
+
+# close_write covers an in-place save, moved_to an editor that writes a temp
+# file and renames it over the original.
+inotifywait -qm -e close_write -e moved_to --format '%f' "$root" |
+while read -r file; do
+  case "$file" in
+    *.qml)
+      echo "$file -- reloaded by the shell"
+      ;;
+    Generator.js | manifest.json)
+      echo "$file -- syncing"
+      "$root/scripts/apply"
+      ;;
+  esac
+done

@@ -9,24 +9,7 @@
 const assert = require("assert")
 const fs = require("fs")
 const path = require("path")
-
-// Load the QML library as plain JavaScript. `.pragma library` is a QML
-// directive that node cannot parse, and the file has no exports of its own, so
-// the symbols are returned explicitly -- which also fails loudly if one is
-// renamed out from under these tests.
-function loadGenerator() {
-  const source = fs
-    .readFileSync(path.join(__dirname, "..", "Generator.js"), "utf8")
-    .replace(/^\s*\.pragma\s+library\s*/, "")
-
-  const names = [
-    "DEFAULTS", "BINDINGS", "LABEL_STYLES", "LAYOUTS", "MODIFIERS", "STRIDE", "MAX_TAGS",
-    "resolve", "render", "parseBinding", "formatBinding", "modifierSymbol", "tagLabel",
-    "labelWidth", "toStringList"
-  ]
-
-  return new Function(source + "\n;return { " + names.join(", ") + " };")()
-}
+const { loadGenerator } = require("../scripts/load-generator")
 
 const g = loadGenerator()
 
