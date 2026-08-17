@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "chagel.workspace-tags",
   "name": "Workspace Tags",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "MGC <chagel@gmail.com>",
   "license": "MIT",
   "description": "A workspace indicator that belongs to the monitor it is drawn on: each bar shows its own screen's tags and its own selection, instead of every bar mirroring whichever workspace is globally focused. Optionally generates a Hyprland config giving each monitor a private set of dwm-style tags, with per-tag layouts.",
